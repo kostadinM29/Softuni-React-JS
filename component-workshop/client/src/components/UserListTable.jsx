@@ -6,6 +6,7 @@ import CreateUserModal from "./CreateUserModal";
 import DeleteUserModal from "./DeleteUserModal";
 import UserDetailsModal from "./UserDetailsModal";
 import UserListRow from "./UserListRow";
+import Spinner from "./Spinner"
 
 const UserListTable = () =>
 {
@@ -14,12 +15,16 @@ const UserListTable = () =>
     const [showDelete, setShowDelete] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() =>
     {
+        setIsLoading(true);
+
         userService.GetAll()
             .then(result => setUsers(result))
-            .catch(error => console.log(error));
+            .catch(error => console.log(error))
+            .finally(() => setIsLoading(false));
     }, []);
 
     const createUserClickHandler = () =>
@@ -87,6 +92,7 @@ const UserListTable = () =>
                     userId={selectedUser}
                 />
             )}
+            {isLoading && <Spinner />}
 
             <table className="table">
                 <thead>
@@ -166,4 +172,4 @@ const UserListTable = () =>
     );
 };
 
-export default UserListTable;
+export default UserListTable; 
