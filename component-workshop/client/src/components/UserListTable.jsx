@@ -85,6 +85,7 @@ const UserListTable = () =>
         const data = Object.fromEntries(new FormData(e.currentTarget));
         const newUser = await userService.Edit(data, selectedUser);
 
+        // stupid but it works because edit doesnt return user's id
         newUser._id = selectedUser;
         setUsers(state =>
         {
