@@ -12,7 +12,7 @@ const UserDetailsModal = ({
 
     useEffect(() =>
     {
-        userService.getUser(userId)
+        userService.GetUser(userId)
             .then(result => setUser(result));
     }, [userId]);
 

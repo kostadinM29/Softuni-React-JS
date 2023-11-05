@@ -3,13 +3,15 @@ import { useEffect, useState } from "react";
 import * as userService from "../services/userService";
 
 import CreateUserModal from "./CreateUserModal";
-import UserListRow from "./UserListRow";
+import DeleteUserModal from "./DeleteUserModal";
 import UserDetailsModal from "./UserDetailsModal";
+import UserListRow from "./UserListRow";
 
 const UserListTable = () =>
 {
     const [users, setUsers] = useState([]);
     const [showCreate, setShowCreate] = useState(false);
+    const [showDelete, setShowDelete] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
@@ -46,8 +48,21 @@ const UserListTable = () =>
     {
         setSelectedUser(userId);
         setShowDetails(true);
-        const userDetails = await userService.getUser(userId);
-        console.log(userDetails)
+    };
+
+    const userDeleteClickHandler = (userId) =>
+    {
+        setSelectedUser(userId);
+        setShowDelete(true);
+    };
+
+    const userDeleteHandler = async () =>
+    {
+        const result = await userService.DeleteUser(selectedUser);
+
+        setUsers(state => state.filter(user => user._id !== selectedUser));
+
+        setShowDelete(false);
     };
 
     return (
@@ -56,6 +71,13 @@ const UserListTable = () =>
                 <CreateUserModal
                     onClose={hideCreateUserModalHandler}
                     onCreate={userCreateHandler}
+                />
+            )}
+
+            {showDelete && (
+                <DeleteUserModal
+                    onClose={() => setShowDelete(false)}
+                    onDelete={userDeleteHandler}
                 />
             )}
 
@@ -133,6 +155,7 @@ const UserListTable = () =>
                             key={user._id}
                             {...user}
                             onDetailsClick={userDetailsClickHandler}
+                            onDeleteClick={userDeleteClickHandler}
                         />
                     ))}
                 </tbody>

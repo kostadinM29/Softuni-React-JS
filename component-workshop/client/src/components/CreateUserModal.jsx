@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 
-import * as userService from "../services/userService";
-
 const CreateUserModal = ({
     onClose,
     onCreate,
