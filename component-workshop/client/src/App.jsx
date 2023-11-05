@@ -1,6 +1,6 @@
-import Footer from './Components/Footer'
-import Header from './Components/Header'
-import UserList from './Components/UserList'
+import Footer from './components/Footer'
+import Header from './components/Header'
+import UserList from './components/UserList'
 import './styles.css'
 
 function App()

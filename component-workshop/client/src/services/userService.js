@@ -38,6 +38,35 @@ export const Create = async (data) =>
     return result;
 };
 
+export const Edit = async (data, userId) =>
+{
+    const body = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        imageUrl: data.imageUrl,
+        phoneNumber: data.phoneNumber,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        address: {
+            country: data.country,
+            city: data.city,
+            street: data.street,
+            streetNumber: data.streetNumber,
+        }
+    }
+    const response = await fetch(`${baseUrl}/${userId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+    });
+    const result = await response.json();
+
+    return result;
+};
+
 export const GetUser = async (userId) =>
 {
     const response = await fetch(`${baseUrl}/${userId}`);

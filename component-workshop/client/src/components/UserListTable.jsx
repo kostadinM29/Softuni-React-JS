@@ -7,11 +7,13 @@ import DeleteUserModal from "./DeleteUserModal";
 import UserDetailsModal from "./UserDetailsModal";
 import UserListRow from "./UserListRow";
 import Spinner from "./Spinner"
+import EditUserModal from "./EditUserModal";
 
 const UserListTable = () =>
 {
     const [users, setUsers] = useState([]);
     const [showCreate, setShowCreate] = useState(false);
+    const [showEdit, setShowEdit] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -70,12 +72,50 @@ const UserListTable = () =>
         setShowDelete(false);
     };
 
+    const userEditClickHandler = (userId) =>
+    {
+        setSelectedUser(userId);
+        setShowEdit(true);
+    };
+
+    const userEditHandler = async (e) =>
+    {
+        e.preventDefault();
+
+        const data = Object.fromEntries(new FormData(e.currentTarget));
+        const newUser = await userService.Edit(data, selectedUser);
+
+        newUser._id = selectedUser;
+        setUsers(state =>
+        {
+            return state.map(user =>
+            {
+                if (user._id === selectedUser)
+                {
+                    // Update the user's properties
+                    return { ...user, ...newUser };
+                }
+                return user; // Keep other users as they are
+            });
+        });
+
+        setShowEdit(false);
+    };
+
     return (
         <div className="table-wrapper">
             {showCreate && (
                 <CreateUserModal
                     onClose={hideCreateUserModalHandler}
                     onCreate={userCreateHandler}
+                />
+            )}
+
+            {showEdit && (
+                <EditUserModal
+                    onClose={() => setShowEdit(false)}
+                    onEdit={userEditHandler}
+                    userId={selectedUser}
                 />
             )}
 
@@ -161,6 +201,7 @@ const UserListTable = () =>
                             key={user._id}
                             {...user}
                             onDetailsClick={userDetailsClickHandler}
+                            onEditClick={userEditClickHandler}
                             onDeleteClick={userDeleteClickHandler}
                         />
                     ))}
