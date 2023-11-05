@@ -1,19 +1,71 @@
-import UserListRow from "./UserListRow";
 import { useEffect, useState } from "react";
+
 import * as userService from "../services/userService";
+
+import CreateUserModal from "./CreateUserModal";
+import UserListRow from "./UserListRow";
+import UserDetailsModal from "./UserDetailsModal";
 
 const UserListTable = () =>
 {
     const [users, setUsers] = useState([]);
+    const [showCreate, setShowCreate] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
 
     useEffect(() =>
     {
         userService.GetAll()
-            .then(result => setUsers(result));
+            .then(result => setUsers(result))
+            .catch(error => console.log(error));
     }, []);
+
+    const createUserClickHandler = () =>
+    {
+        setShowCreate(true);
+    };
+
+    const hideCreateUserModalHandler = () =>
+    {
+        setShowCreate(false);
+    };
+
+    const userCreateHandler = async (e) =>
+    {
+        e.preventDefault();
+
+        const data = Object.fromEntries(new FormData(e.currentTarget));
+        const newUser = await userService.Create(data);
+
+        setUsers(state => [...state, newUser]);
+
+        setShowCreate(false);
+    };
+
+    const userDetailsClickHandler = async (userId) =>
+    {
+        setSelectedUser(userId);
+        setShowDetails(true);
+        const userDetails = await userService.getUser(userId);
+        console.log(userDetails)
+    };
 
     return (
         <div className="table-wrapper">
+            {showCreate && (
+                <CreateUserModal
+                    onClose={hideCreateUserModalHandler}
+                    onCreate={userCreateHandler}
+                />
+            )}
+
+            {showDetails && (
+                <UserDetailsModal
+                    onClose={() => setShowDetails(false)}
+                    userId={selectedUser}
+                />
+            )}
+
             <table className="table">
                 <thead>
                     <tr>
@@ -80,10 +132,13 @@ const UserListTable = () =>
                         <UserListRow
                             key={user._id}
                             {...user}
+                            onDetailsClick={userDetailsClickHandler}
                         />
                     ))}
                 </tbody>
             </table>
+
+            <button className="btn-add btn" onClick={createUserClickHandler}>Add new user</button>
         </div>
     );
 };
