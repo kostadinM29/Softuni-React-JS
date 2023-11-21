@@ -10,6 +10,16 @@ const buildOptions = (data) =>
         };
     }
 
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (accessToken)
+    {
+        options.headers = {
+            ...options.headers,
+            'X-Authorization': accessToken,
+        };
+    }
+
     return options;
 };
 
@@ -24,6 +34,11 @@ export const request = async (method, url, data) =>
     {
         throw new Error('Fetch error!')
     };
+
+    if (response.status === 204)
+    {
+        return {};
+    }
 
     const result = await response.json();
 
