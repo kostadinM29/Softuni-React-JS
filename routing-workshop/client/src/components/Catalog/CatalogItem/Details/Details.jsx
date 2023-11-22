@@ -1,10 +1,12 @@
 import { useParams } from "react-router-dom";
 import * as gameService from "../../../../services/gameService";
 import * as commentsService from "../../../../services/commentsService";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import AuthContext from "../../../../contexts/authContext";
 
 const Details = () =>
 {
+    const { email } = useContext(AuthContext);
     const { id } = useParams();
     const [game, setGame] = useState({});
     const [comments, setComments] = useState([]);
@@ -25,11 +27,9 @@ const Details = () =>
         const formData = new FormData(e.currentTarget);
         const newComment = await commentsService.create(
             id,
-            formData.get('username'),
             formData.get('comment'),
         );
-
-        setComments(oldState => [...oldState, newComment]);
+        setComments(oldState => [...oldState, { ...newComment, owner: { email } }]);
     }
 
     return (
@@ -49,9 +49,9 @@ const Details = () =>
                 <div className="details-comments">
                     <h2>Comments:</h2>
                     <ul>
-                        {comments.map(({ _id, username, text }) => (
+                        {comments.map(({ _id, owner, text }) => (
                             <li key={_id} className="comment">
-                                <p>{username}: {text}</p>
+                                <p>{owner.email}: {text}</p>
                             </li>
                         ))}
                     </ul>
@@ -70,7 +70,6 @@ const Details = () =>
             <article className="create-comment">
                 <label>Add new comment:</label>
                 <form className="form" onSubmit={addCommentHandler}>
-                    <input type="text" name="username" placeholder="Username..." />
                     <textarea name="comment" placeholder="Comment......"></textarea>
                     <input className="btn submit" type="submit" value="Add Comment" />
                 </form>

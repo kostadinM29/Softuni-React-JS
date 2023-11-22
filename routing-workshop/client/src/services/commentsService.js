@@ -1,26 +1,24 @@
 import { request } from "../lib/request";
 
 
-const BASE_URL = 'http://localhost:3030/jsonstore/comments';
+const BASE_URL = 'http://localhost:3030/data/comments';
 
 export const getAll = async (gameId) =>
 {
-    // const query = new URLSearchParams({
-    //     where: `gameId="${gameId}"`,
-    // });
+    const query = new URLSearchParams({
+        where: `gameId="${gameId}"`,
+        load: `owner=_ownerId:users`,
+    });
 
-    //const result = await request('GET', `${BASE_URL}?${query}}`);
-    const result = await request('GET', BASE_URL);
+    const result = await request('GET', `${BASE_URL}?${query}`);
 
-    // Temp solution
-    return Object.values(result).filter(comment => comment.gameId === gameId);
+    return result;
 };
 
-export const create = async (gameId, username, text) =>
+export const create = async (gameId, text) =>
 {
     const result = await request('POST', BASE_URL, {
         gameId,
-        username,
         text,
     });
 

@@ -32,6 +32,7 @@ export const request = async (method, url, data) =>
 
     if (!response.ok)
     {
+        console.log(response);
         throw new Error('Fetch error!')
     };
 
